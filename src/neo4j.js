@@ -25,6 +25,8 @@ export function initDriver(uri, username, password) {
   // TODO: Create an instance of the driver here
    driver = neo4j.driver(uri, neo4j.auth.basic(username, password))
 
+
+
    // Verify connectivity
      return driver.verifyConnectivity()
        // Resolve with an instance of the driver
@@ -60,3 +62,5 @@ export function closeDriver() {
   return driver && driver.close()
 }
 // end::closeDriver[]
+
+
