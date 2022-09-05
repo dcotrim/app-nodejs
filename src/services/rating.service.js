@@ -4,6 +4,7 @@ import NotFoundError from '../errors/not-found.error.js'
 import { toNativeTypes } from '../utils.js'
 
 // TODO: Import the `int` function from neo4j-driver
+import { int } from 'neo4j-driver'
 
 export default class ReviewService {
   /**
@@ -39,10 +40,29 @@ export default class ReviewService {
    */
   // tag::forMovie[]
   async forMovie(id, sort = 'timestamp', order = 'ASC', limit = 6, skip = 0) {
-    // TODO: Get ratings for a Movie
+  // Open a new database session
+  const session = this.driver.session()
 
-    return ratings
-  }
+  // Get ratings for a Movie
+  const res = await session.readTransaction(tx => tx.run(`
+    MATCH (u:User)-[r:RATED]->(m:Movie {tmdbId: $id})
+    RETURN r {
+      .rating,
+      .timestamp,
+      user: u {
+        .id, .name
+      }
+    } AS review
+    ORDER BY r.\`${sort}\` ${order}
+    SKIP $skip
+    LIMIT $limit
+    `, { id, limit: int(limit), skip: int(skip) }))
+
+  // Close the session
+  await session.close()
+
+  return res.records.map(row => toNativeTypes(row.get('review')))
+}
   // end::forMovie[]
 
   /**
@@ -60,10 +80,42 @@ export default class ReviewService {
   // tag::add[]
   async add(userId, movieId, rating) {
     // TODO: Convert the native integer into a Neo4j Integer
+    rating = int(rating)
+
     // TODO: Save the rating in the database
+
+    // Open a new session
+    const session = this.driver.session()
+
+    // Run the cypher query
+    const res = await session.writeTransaction(tx => tx.run(`
+      MATCH (u:User {userId: $userId})
+      MATCH (m:Movie {tmdbId: $movieId})
+
+      MERGE (u)-[r:RATED]->(m)
+      SET r.rating = $rating,
+        r.timestamp = timestamp()
+
+      RETURN m {
+        .*,
+        rating: r.rating
+      } AS movie
+    `, { userId, movieId, rating }))
+
+    // Close the session
+    await session.close()
+
+    if ( res.records.length === 0 ) {
+      throw new NotFoundError(`Could not create rating for Movie ${movieId} by User ${userId}`)
+    }
+
     // TODO: Return movie details and a rating
 
-    return goodfellas
+    // Return movie details and a rating
+    const [ first ] = res.records
+    const movie = first.get('movie')
+
+    return toNativeTypes(movie)
   }
   // end::add[]
 
