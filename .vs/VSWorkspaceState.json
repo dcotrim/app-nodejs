@@ -1,0 +1,15 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\neoflix-cypher",
+    "\\neoflix-cypher\\cypher",
+    "\\public",
+    "\\public\\css",
+    "\\public\\js",
+    "\\src",
+    "\\src\\serverless",
+    "\\src\\services"
+  ],
+  "SelectedNode": "\\src\\services\\rating.service.js",
+  "PreviewInSolutionExplorer": false
+}
