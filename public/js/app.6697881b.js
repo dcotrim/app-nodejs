@@ -900,7 +900,7 @@
 			},
 			se = Object(o["g"])("h1", {
 				class: "section__title section__title--head"
-			}, "Graph Powered Movie Recommendations", -1),
+			}, "alya.Sintese.de", -1),
 			ue = Object(o["g"])("p", null, "Using the power of Graph Databases and Cypher to serve you real-time recommendations.", -1),
 			le = {
 				class: "article__btns"
