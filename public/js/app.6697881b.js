@@ -220,7 +220,7 @@
 			c = n.n(i),
 			s = "desc",
 			u = c.a.create({
-				baseURL: "http://localhost:3000/api"
+				baseURL: "https://alya.sintese.de:3000/api"
 			});
 
 		function l(e) {
